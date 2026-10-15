@@ -34,11 +34,17 @@ export async function seedDatabase() {
   if (await db.users.count()) return false
 
   const passwordHash = await hashPassword('admin123')
+  const teacherPasswordHash = await hashPassword('guru123')
+  const students = await Promise.all(Array.from({ length: 20 }, async (_, index) => {
+    const n = index + 1
+    const nisn = `00876543${String(n).padStart(2, '0')}`
+    return { nis: nisn, nisn, nomorPeserta: `26${String(n).padStart(4, '0')}`, nama: `Siswa Contoh ${String(n).padStart(2, '0')}`, kelasId: ((index % 3) + 1), rombel: ['X IPA 1', 'XI IPA 1', 'XII IPA 1'][index % 3], status: 'aktif', passwordHash: await hashPassword(nisn) }
+  }))
   await db.transaction('rw', db.users, db.siswa, db.guru, db.kelas, db.mapel, db.tahunAjaran, db.soal, db.ujian, db.ujianSoal, db.pesertaUjian, db.pengaturan, async () => {
     await db.users.bulkAdd([
       { username: 'admin', passwordHash, role: 'admin', nama: 'Administrator' },
-      { username: 'guru.maya', passwordHash: await hashPassword('guru123'), role: 'guru', guruId: 1, nama: 'Maya Lestari' },
-      { username: 'guru.budi', passwordHash: await hashPassword('guru123'), role: 'guru', guruId: 2, nama: 'Budi Santoso' },
+      { username: 'guru.maya', passwordHash: teacherPasswordHash, role: 'guru', guruId: 1, nama: 'Maya Lestari' },
+      { username: 'guru.budi', passwordHash: teacherPasswordHash, role: 'guru', guruId: 2, nama: 'Budi Santoso' },
     ])
     await db.guru.bulkAdd([
       { nip: '198605102010012001', nama: 'Maya Lestari', email: 'maya@sekolah.sch.id' },
@@ -49,11 +55,6 @@ export async function seedDatabase() {
       { kode: 'XI-IPA-1', tingkat: 'XI', nama: 'XI IPA 1', rombel: 'XI IPA 1' },
       { kode: 'XII-IPA-1', tingkat: 'XII', nama: 'XII IPA 1', rombel: 'XII IPA 1' },
     ])
-    const students = Array.from({ length: 20 }, (_, index) => {
-      const n = index + 1
-      const nisn = `00876543${String(n).padStart(2, '0')}`
-      return { nis: nisn, nisn, nomorPeserta: `26${String(n).padStart(4, '0')}`, nama: `Siswa Contoh ${String(n).padStart(2, '0')}`, kelasId: ((index % 3) + 1), rombel: ['X IPA 1', 'XI IPA 1', 'XII IPA 1'][index % 3], status: 'aktif', passwordHash }
-    })
     const studentIds = await db.siswa.bulkAdd(students, { allKeys: true })
     await db.mapel.bulkAdd([
       { kode: 'MAT', nama: 'Matematika', guruId: 1, tingkat: ['X', 'XI', 'XII'] },

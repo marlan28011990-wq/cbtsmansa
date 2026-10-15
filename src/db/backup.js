@@ -24,5 +24,5 @@ export function downloadJson(data, filename) {
   link.href = url
   link.download = filename
   link.click()
-  URL.revokeObjectURL(url)
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }

@@ -9,13 +9,13 @@ Aplikasi ujian sekolah offline-first untuk satu perangkat atau laboratorium komp
 3. Jalankan `npm run dev`, lalu buka alamat yang dicetak Vite.
 4. Untuk membuat aplikasi produksi jalankan `npm run build`; pratinjau hasil dengan `npm run preview`.
 
-Data contoh otomatis dibuat saat browser membuka aplikasi untuk pertama kali. Admin awal `admin` / `admin123`; guru contoh `guru.maya` dan `guru.budi` / `guru123`. Peserta masuk hanya dengan NIS murid; pada data contoh, kata sandi awal sama dengan NIS. Ubah kredensial awal sebelum pemakaian nyata.
+Data contoh otomatis dibuat saat browser membuka aplikasi untuk pertama kali. Admin awal `admin` / `admin123`; guru contoh `guru.maya` dan `guru.budi` / `guru123`. Peserta masuk menggunakan NIS murid; pada data contoh, kata sandi awal setiap siswa sama dengan NIS masing-masing. Admin dapat mengatur ulang kata sandi siswa ke NIS dari Data Master. Ubah kredensial awal sebelum pemakaian nyata.
 
 ## Alur perangkat lab
 
 1. Pada komputer admin, kelola jadwal dan ekspor Paket Ujian `.json` dari **Manajemen Ujian**.
 2. Pindahkan paket ke komputer peserta melalui media lokal, impor di **Manajemen Ujian** pada perangkat itu, dan berikan token yang terlihat pada komputer admin.
-3. Peserta membuka **Halaman peserta**, masuk dengan NISN atau nomor peserta dan kata sandi, pilih jadwal, masukkan token, lalu mengerjakan ujian.
+3. Peserta membuka **Halaman peserta**, masuk dengan NIS dan kata sandi, pilih jadwal, masukkan token, lalu mengerjakan ujian.
 4. Setelah mengumpulkan, peserta mengunduh File Hasil `.json`. Impor file tersebut di **Manajemen Ujian** komputer admin.
 5. Rekap dapat diekspor ke Excel dari **Hasil & analisis**. Backup penuh dan pemulihan tersedia di **Pengaturan**.
 
