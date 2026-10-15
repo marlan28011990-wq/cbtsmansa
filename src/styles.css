@@ -6,7 +6,7 @@
 body { margin: 0; min-width: 320px; }
 @media print {
   body { background: #fff !important; }
-  aside, header, .no-print, main > div:first-child { display: none !important; }
+  aside, .app-header, .no-print, main > div:first-child { display: none !important; }
   .print-area { display: block !important; color: #000; }
   .print-area table { page-break-inside: auto; }
   .print-area tr { page-break-inside: avoid; page-break-after: auto; }

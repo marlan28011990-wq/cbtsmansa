@@ -14,7 +14,7 @@ export function scoreAnswer(question, answer, complexMode = 'proporsional') {
   }
   if (jenis === 'benar_salah') {
     const statements = konten.statements ?? []
-    const right = statements.filter((s, i) => Boolean(answer?.nilai?.[i]) === Boolean(s.correct)).length
+    const right = statements.filter((s, i) => answer?.nilai?.[i] !== undefined && Boolean(answer.nilai[i]) === Boolean(s.correct)).length
     return { score: statements.length ? Number(question.bobot) * right / statements.length : 0, pending: false }
   }
   if (jenis === 'menjodohkan') {

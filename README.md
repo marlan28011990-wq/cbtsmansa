@@ -9,7 +9,7 @@ Aplikasi ujian sekolah offline-first untuk satu perangkat atau laboratorium komp
 3. Jalankan `npm run dev`, lalu buka alamat yang dicetak Vite.
 4. Untuk membuat aplikasi produksi jalankan `npm run build`; pratinjau hasil dengan `npm run preview`.
 
-Data contoh otomatis dibuat saat browser membuka aplikasi untuk pertama kali. Admin awal `admin` / `admin123`; guru contoh `guru.maya` dan `guru.budi` / `guru123`. Siswa contoh memakai NISN sebagai kata sandi awal. Ubah kredensial awal sebelum pemakaian nyata.
+Data contoh otomatis dibuat saat browser membuka aplikasi untuk pertama kali. Admin awal `admin` / `admin123`; guru contoh `guru.maya` dan `guru.budi` / `guru123`. Peserta masuk hanya dengan NIS murid; pada data contoh, kata sandi awal sama dengan NIS. Ubah kredensial awal sebelum pemakaian nyata.
 
 ## Alur perangkat lab
 
@@ -28,7 +28,7 @@ Data contoh otomatis dibuat saat browser membuka aplikasi untuk pertama kali. Ad
 
 ## Template Excel
 
-Untuk siswa gunakan kolom `NISN`, `Nama`, `Rombel`, `NomorPeserta`, dan `Password`. Untuk soal gunakan `mapelId`, `tingkat`, `jenis`, `kesulitan`, `bobot`, `pertanyaan`, `konten`, `pembahasan`, `gambar`. `konten` menerima objek JSON (misalnya `{"options":["A","B","C","D"],"correct":[0]}`) atau objek langsung bila file dibuat oleh SheetJS. Tipe soal: `pilihan_ganda`, `pilihan_ganda_kompleks`, `benar_salah`, `menjodohkan`, `isian_singkat`, `uraian`.
+Untuk siswa gunakan kolom `NIS`, `Nama`, `Rombel`, `NomorPeserta`, dan `Password`; kolom `NISN` opsional untuk data identitas tambahan. Untuk soal gunakan `mapelId`, `tingkat`, `jenis`, `kesulitan`, `bobot`, `pertanyaan`, `konten`, `pembahasan`, `gambar`. `konten` menerima objek JSON (misalnya `{"options":["A","B","C","D"],"correct":[0]}`) atau objek langsung bila file dibuat oleh SheetJS. Tipe soal: `pilihan_ganda`, `pilihan_ganda_kompleks`, `benar_salah`, `menjodohkan`, `isian_singkat`, `uraian`.
 
 ## Catatan operasional
 

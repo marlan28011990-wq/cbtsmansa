@@ -6,7 +6,12 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('cbt-session') || 'null'))
   async function login(username, password) {
-    const account = await db.users.where('username').equals(username.trim()).first()
+    const identity = username.trim()
+    let account = await db.users.where('username').equals(identity).first()
+    if (!account && identity.includes('@')) {
+      const teacher = await db.guru.where('email').equals(identity.toLowerCase()).first()
+      if (teacher) account = await db.users.where('guruId').equals(teacher.id).first()
+    }
     if (!account || account.passwordHash !== await hashPassword(password)) throw new Error('Nama pengguna atau kata sandi salah.')
     const safe = { id: account.id, username: account.username, role: account.role, nama: account.nama, guruId: account.guruId }
     localStorage.setItem('cbt-session', JSON.stringify(safe)); setUser(safe); return safe
