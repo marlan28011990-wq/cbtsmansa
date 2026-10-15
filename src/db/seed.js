@@ -11,7 +11,7 @@ const sampleQuestions = Array.from({ length: 30 }, (_, index) => {
   const number = index + 1
   const type = questionTypes[index % questionTypes.length]
   const subjectId = Math.floor(index / 15) + 1
-  const kelasId = Math.floor((index % 15) / 5) + 1
+  const kelasId = [1, 6, 11][Math.floor((index % 15) / 5)]
   const prompt = subjectId === 1
     ? `Pilih jawaban yang tepat untuk soal Matematika nomor ${number}.`
     : `Perhatikan konsep Bahasa Indonesia berikut, lalu jawab nomor ${number}.`
@@ -24,7 +24,7 @@ const sampleQuestions = Array.from({ length: 30 }, (_, index) => {
     uraian: { rubric: 'Dinilai oleh guru berdasarkan ketepatan dan kelengkapan jawaban.' },
   }[type]
   return {
-    mapelId: subjectId, tingkat: ['X', 'XI', 'XII'][kelasId - 1], kelasId,
+    mapelId: subjectId, tingkat: ['X', 'XI', 'XII'][Math.floor((index % 15) / 5)], kelasId,
     jenis: type, kesulitan: ['mudah', 'sedang', 'sulit'][number % 3], bobot: 1,
     pertanyaan: prompt, konten: answer, pembahasan: '', gambar: null, createdAt: new Date().toISOString(),
   }
@@ -38,7 +38,8 @@ export async function seedDatabase() {
   const students = await Promise.all(Array.from({ length: 20 }, async (_, index) => {
     const n = index + 1
     const nisn = `00876543${String(n).padStart(2, '0')}`
-    return { nis: nisn, nisn, nomorPeserta: `26${String(n).padStart(4, '0')}`, nama: `Siswa Contoh ${String(n).padStart(2, '0')}`, kelasId: ((index % 3) + 1), rombel: ['X IPA 1', 'XI IPA 1', 'XII IPA 1'][index % 3], status: 'aktif', passwordHash: await hashPassword(nisn) }
+    const kelasId = [1, 6, 11][index % 3]
+    return { nis: nisn, nisn, nomorPeserta: `26${String(n).padStart(4, '0')}`, nama: `Siswa Contoh ${String(n).padStart(2, '0')}`, kelasId, rombel: ['X1', 'XI1', 'XII1'][index % 3], status: 'aktif', passwordHash: await hashPassword(nisn) }
   }))
   await db.transaction('rw', db.users, db.siswa, db.guru, db.kelas, db.mapel, db.tahunAjaran, db.soal, db.ujian, db.ujianSoal, db.pesertaUjian, db.pengaturan, async () => {
     await db.users.bulkAdd([
@@ -51,9 +52,9 @@ export async function seedDatabase() {
       { nip: '198203152008011003', nama: 'Budi Santoso', email: 'budi@sekolah.sch.id' },
     ])
     await db.kelas.bulkAdd([
-      { kode: 'X-IPA-1', tingkat: 'X', nama: 'X IPA 1', rombel: 'X IPA 1' },
-      { kode: 'XI-IPA-1', tingkat: 'XI', nama: 'XI IPA 1', rombel: 'XI IPA 1' },
-      { kode: 'XII-IPA-1', tingkat: 'XII', nama: 'XII IPA 1', rombel: 'XII IPA 1' },
+      ...['X1', 'X2', 'X3', 'X4', 'X5'].map((rombel) => ({ kode: rombel, tingkat: 'X', nama: rombel, rombel })),
+      ...['XI1', 'XI2', 'XI3', 'XI4', 'XI5'].map((rombel) => ({ kode: rombel, tingkat: 'XI', nama: rombel, rombel })),
+      ...['XII1', 'XII2', 'XII3', 'XII4', 'XII5'].map((rombel) => ({ kode: rombel, tingkat: 'XII', nama: rombel, rombel })),
     ])
     const studentIds = await db.siswa.bulkAdd(students, { allKeys: true })
     await db.mapel.bulkAdd([
@@ -63,14 +64,14 @@ export async function seedDatabase() {
     await db.tahunAjaran.add({ label: '2026/2027', semester: 'Ganjil', aktif: true })
     await db.soal.bulkAdd(sampleQuestions)
     const examId = await db.ujian.add({
-      kode: 'SIM-2026-01', nama: 'Simulasi Ujian Matematika', jenis: 'Try Out', mapelId: 1, kelasId: 2,
+      kode: 'SIM-2026-01', nama: 'Simulasi Ujian Matematika', jenis: 'Try Out', mapelId: 1, kelasId: 6,
       tanggal: new Date().toISOString().slice(0, 10), jamMulai: '08:00', durasiMenit: 90, jumlahSoal: 5,
       acakSoal: true, acakOpsi: true, tampilkanNilai: false, batasMinimalMenit: 15,
       token: 'CBT261', status: 'aktif', kompleksMode: 'proporsional',
     })
-    const examQuestions = await db.soal.where('mapelId').equals(1).filter((question) => question.kelasId === 2 && question.tingkat === 'XI').limit(5).toArray()
+    const examQuestions = await db.soal.where('mapelId').equals(1).filter((question) => question.kelasId === 6 && question.tingkat === 'XI').limit(5).toArray()
     await db.ujianSoal.bulkAdd(examQuestions.map((question, index) => ({ ujianId: examId, soalId: question.id, urutan: index + 1 })))
-    const examStudents = students.map((student, index) => ({ student, id: studentIds[index] })).filter(({ student }) => student.kelasId === 2)
+    const examStudents = students.map((student, index) => ({ student, id: studentIds[index] })).filter(({ student }) => student.kelasId === 6)
     await db.pesertaUjian.bulkAdd(examStudents.map(({ id }) => ({ ujianId: examId, siswaId: id, status: 'belum_login', pelanggaranCount: 0 })))
     await db.pengaturan.bulkAdd([
       { kunci: 'sekolah', nilai: { nama: 'SMA Contoh Nusantara', alamat: '', kepalaSekolah: '', logo: null } },
