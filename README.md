@@ -26,6 +26,12 @@ Data contoh otomatis dibuat saat browser membuka aplikasi untuk pertama kali. Ad
 - Jadwal ujian, token acak, paket lintas perangkat, enam tipe soal, timer berbasis waktu mulai tersimpan, navigasi jawaban, autosave, penanda ragu, deteksi pindah tab/fullscreen, dan ekspor hasil peserta.
 - Koreksi nilai uraian dan hitung nilai, rekap Excel, ringkasan analisis butir, daftar hadir/kartu cetak, identitas sekolah, backup/restore seluruh tabel.
 
+## Katalog mata pelajaran SMA
+
+Saat pertama dijalankan setelah pembaruan, aplikasi menambahkan katalog mapel wajib, pilihan, seni/prakarya, enam pendidikan agama, bahasa asing, muatan lokal, serta Koding dan Kecerdasan Artifisial. Setiap mapel diberi kelompok dan tingkat kelas yang sesuai. Mapel yang telah ada dan penugasan gurunya tetap dipertahankan.
+
+Katalog mengikuti struktur SMA Kurikulum Merdeka dalam [Permendikdasmen Nomor 13 Tahun 2025](https://www.kemendikdasmen.go.id/download/file/1244). Mapel pilihan tidak otomatis tersedia di semua sekolah; admin dapat menyesuaikannya dengan KSP, tenaga pendidik, dan sumber daya sekolah, serta menambah mapel lokal sendiri.
+
 ## Template Excel
 
 Untuk siswa gunakan kolom `NIS`, `Nama`, `Rombel`, `NomorPeserta`, dan `Password`; kolom `NISN` opsional untuk data identitas tambahan. Untuk soal gunakan `mapelId`, `tingkat`, `jenis`, `kesulitan`, `bobot`, `pertanyaan`, `konten`, `pembahasan`, `gambar`. `konten` menerima objek JSON (misalnya `{"options":["A","B","C","D"],"correct":[0]}`) atau objek langsung bila file dibuat oleh SheetJS. Tipe soal: `pilihan_ganda`, `pilihan_ganda_kompleks`, `benar_salah`, `menjodohkan`, `isian_singkat`, `uraian`.
