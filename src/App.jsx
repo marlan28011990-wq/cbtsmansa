@@ -23,7 +23,8 @@ function Button({ children, variant = 'primary', className = '', ...props }) {
   return <button className={cx('inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50', styles[variant], className)} {...props}>{children}</button>
 }
 function Field({ label, ...props }) { return <label className="block text-sm font-medium text-slate-700">{label}<input className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" {...props} /></label> }
-function Select({ label, children, ...props }) { return <label className="block text-sm font-medium text-slate-700">{label}<select className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500" {...props}>{children}</select></label> }
+const examTypeOptions = ['SAS', 'SAT', 'Formatif', 'Quiz', 'Ujian Sekolah', 'Try Out', 'Simulasi']
+function Select({ label, children, ...props }) { const options = props.name === 'jenis' ? examTypeOptions.map(type => <option key={type}>{type}</option>) : children; return <label className="block text-sm font-medium text-slate-700">{label}<select className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500" {...props}>{options}</select></label> }
 function Notice({ children, error }) { return children ? <div className={cx('rounded-lg px-4 py-3 text-sm', error ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700')}>{children}</div> : null }
 
 function Login() {
