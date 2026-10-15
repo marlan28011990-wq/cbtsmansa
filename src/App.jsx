@@ -39,8 +39,28 @@ function Shell({ children, title, subtitle }) {
 }
 
 function Dashboard() {
+  const { user } = useAuth()
   const siswa = useLiveQuery(() => db.siswa.count(), [], 0); const soal = useLiveQuery(() => db.soal.count(), [], 0); const ujian = useLiveQuery(() => db.ujian.toArray(), [], []); const results = useLiveQuery(() => db.hasil.count(), [], 0)
-  return <Shell title="Ringkasan" subtitle="Ikhtisar operasional ujian dan data sekolah."><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[['Peserta didik', siswa, Users], ['Bank soal', soal, BookOpen], ['Jadwal ujian', ujian.length, CalendarDays], ['Hasil tersimpan', results, CheckCircle2]].map(([label, value, Icon]) => <div key={label} className="rounded-xl border bg-white p-5 shadow-sm"><div className="flex items-center justify-between text-sm text-slate-500"><span>{label}</span><Icon size={20} className="text-blue-700" /></div><div className="mt-3 text-3xl font-bold text-slate-900">{value}</div></div>)}</div><div className="mt-6 grid gap-5 lg:grid-cols-2"><section className="rounded-xl border bg-white p-5"><h2 className="font-bold">Ujian terjadwal</h2><div className="mt-4 divide-y">{ujian.slice(0, 5).map(item => <div className="flex justify-between py-3 text-sm" key={item.id}><span className="font-medium">{item.nama}</span><span className="text-slate-500">{item.tanggal} · {item.status}</span></div>)}{!ujian.length && <p className="py-5 text-sm text-slate-500">Belum ada jadwal ujian.</p>}</div></section><section className="rounded-xl border bg-blue-900 p-6 text-white"><p className="text-sm text-blue-200">Alur lab komputer</p><h2 className="mt-1 text-xl font-bold">Siapkan ujian offline</h2><p className="mt-2 text-sm leading-6 text-blue-100">Buat jadwal dan peserta di perangkat admin, ekspor paket ujian, lalu impor hasil peserta setelah sesi selesai.</p><Link to="/ujian" className="mt-5 inline-flex rounded-lg bg-white px-4 py-2 text-sm font-semibold text-blue-900">Kelola ujian</Link></section></div></Shell>
+  async function deleteExam(exam) {
+    if (user?.role !== 'admin') return
+    if (!window.confirm(`Hapus ujian "${exam.nama}" beserta peserta, jawaban, pelanggaran, dan hasilnya?`)) return
+    try {
+      await db.transaction('rw', db.ujian, db.ujianSoal, db.pesertaUjian, db.jawaban, db.pelanggaran, db.hasil, async () => {
+        const participantIds = await db.pesertaUjian.where('ujianId').equals(exam.id).primaryKeys()
+        for (const participantId of participantIds) {
+          await db.jawaban.where('pesertaUjianId').equals(participantId).delete()
+          await db.pelanggaran.where('pesertaUjianId').equals(participantId).delete()
+        }
+        await db.hasil.where('ujianId').equals(exam.id).delete()
+        await db.pesertaUjian.where('ujianId').equals(exam.id).delete()
+        await db.ujianSoal.where('ujianId').equals(exam.id).delete()
+        await db.ujian.delete(exam.id)
+      })
+    } catch (error) {
+      window.alert(`Gagal menghapus ujian: ${error.message}`)
+    }
+  }
+  return <Shell title="Ringkasan" subtitle="Ikhtisar operasional ujian dan data sekolah."><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{[['Peserta didik', siswa, Users], ['Bank soal', soal, BookOpen], ['Jadwal ujian', ujian.length, CalendarDays], ['Hasil tersimpan', results, CheckCircle2]].map(([label, value, Icon]) => <div key={label} className="rounded-xl border bg-white p-5 shadow-sm"><div className="flex items-center justify-between text-sm text-slate-500"><span>{label}</span><Icon size={20} className="text-blue-700" /></div><div className="mt-3 text-3xl font-bold text-slate-900">{value}</div></div>)}</div><div className="mt-6 grid gap-5 lg:grid-cols-2"><section className="rounded-xl border bg-white p-5"><h2 className="font-bold">Ujian terjadwal</h2><div className="mt-4 divide-y">{ujian.slice(0, 5).map(item => <div className="flex items-center justify-between gap-3 py-3 text-sm" key={item.id}><span className="min-w-0 font-medium">{item.nama}</span><div className="flex shrink-0 items-center gap-2"><span className="text-slate-500">{item.tanggal} · {item.status}</span>{user?.role === 'admin' && <button type="button" aria-label={`Hapus ujian ${item.nama}`} title="Hapus ujian" onClick={() => deleteExam(item)} className="rounded p-2 text-rose-600 hover:bg-rose-50"><Trash2 size={16}/></button>}</div></div>)}{!ujian.length && <p className="py-5 text-sm text-slate-500">Belum ada jadwal ujian.</p>}</div></section><section className="rounded-xl border bg-blue-900 p-6 text-white"><p className="text-sm text-blue-200">Alur lab komputer</p><h2 className="mt-1 text-xl font-bold">Siapkan ujian offline</h2><p className="mt-2 text-sm leading-6 text-blue-100">Buat jadwal dan peserta di perangkat admin, ekspor paket ujian, lalu impor hasil peserta setelah sesi selesai.</p><Link to="/ujian" className="mt-5 inline-flex rounded-lg bg-white px-4 py-2 text-sm font-semibold text-blue-900">Kelola ujian</Link></section></div></Shell>
 }
 
 function DataPage() {
